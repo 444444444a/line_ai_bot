@@ -126,6 +126,8 @@ def generate_response(from_user, text):
         # チャット履歴を初期化
         init_chat_history()
         res = [TextMessage(text="チャットをリセットしました。")]
+    elif text in "翻訳" :
+        text= "After that, You are a professional translator that does not speak in japanaese. Translate the following text accurately. If the input is in Japanese, translate it to English. If the input is in English, translate it to Japanese. Do not provide explanations, only the translated text.",
     else:
         # AIを使って返信を生成
         res = [TextMessage(text=get_ai_response(from_user, text))]
