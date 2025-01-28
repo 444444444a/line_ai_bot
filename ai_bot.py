@@ -69,10 +69,7 @@ def init_chat_history():
         "content": [
             {
                 "type": "text",
-                "text": "You are a professional translator. Translate the following text accurately. "
-            "If the input is in Japanese, translate it to English. "
-            "If the input is in English, translate it to Japanese. "
-            "Do not provide explanations, only the translated text.",
+                "text": "あなたは博識です。様々な分野について質問に答えることができます。",
             },
         ]
     }
@@ -96,7 +93,7 @@ def get_ai_response(from_user, text):
     # AIのパラメータ
     parameters = {
         "model": azure_openai_model,  # AIモデル
-        "max_tokens": 1000,  # 返信メッセージの最大トークン数
+        "max_tokens": 500,  # 返信メッセージの最大トークン数
         "temperature": 0.5,  # 生成の多様性（0: 最も確実な回答、1: 最も多様な回答）
         "frequency_penalty": 0,  # 同じ単語を繰り返す頻度（0: 小さい）
         "presence_penalty": 0,  # すでに生成した単語を再度生成する頻度（0: 小さい）
@@ -106,7 +103,7 @@ def get_ai_response(from_user, text):
 
     # AIから返信を取得
     ai_response = ai.chat.completions.create(messages=chat_history, **parameters)
-    res_text = ai_response.choices[0].message["content"]
+    res_text = ai_response.choices[0].message.content
 
     # AIの返信を記録
     ai_msg = {
@@ -126,8 +123,14 @@ def generate_response(from_user, text):
         # チャット履歴を初期化
         init_chat_history()
         res = [TextMessage(text="チャットをリセットしました。")]
-    elif text in "翻訳" :
-        text= "After that, You are a professional translator that does not speak in japanaese. Translate the following text accurately. If the input is in Japanese, translate it to English. If the input is in English, translate it to Japanese. Do not provide explanations, only the translated text.",
+    elif "翻訳1" in text:
+        text="この後、ユーザーが送る全ての内容を日本語に翻訳してください。"
+        ai_res = get_ai_response(from_user, text)
+        res = [TextMessage(text=ai_res)]
+    elif "翻訳2" in text:
+        text = "この後、ユーザーが送る全ての内容を指定言語へ翻訳しますので、言語を指定してください。"
+        ai_res = get_ai_response(from_user, text)
+        res = [TextMessage(text=ai_res)]
     else:
         # AIを使って返信を生成
         res = [TextMessage(text=get_ai_response(from_user, text))]
